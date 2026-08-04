@@ -1,0 +1,35 @@
+<!doctype html><html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Closet Day</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#fff7fb;color:#443743;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans Thai",sans-serif}
+header{padding:22px 18px 14px;background:#fff7fb;position:sticky;top:0;z-index:5;border-bottom:1px solid #f1dce6}
+h1{margin:0;font-size:25px}.sub{color:#947f8d;font-size:13px;margin-top:4px}.wrap{max-width:700px;margin:auto;padding:0 15px 40px}
+.hero{margin:15px 0;padding:20px;border-radius:25px;background:linear-gradient(135deg,#ffddeb,#eee4ff)}.hero h2{margin:0 0 4px}
+button{font:inherit;border:0;border-radius:15px;padding:12px 16px;background:white;color:#604c5a;font-weight:700;box-shadow:0 3px 12px #d6b9c533;touch-action:manipulation}.primary{background:#604c5a;color:white}
+.hero button{margin-top:13px;width:100%}.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px}.tabs button{white-space:nowrap;padding:10px 13px}.tabs .on{background:#604c5a;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.card{background:#fff;border:2px solid transparent;border-radius:20px;padding:9px;box-shadow:0 3px 14px #d6b9c522;touch-action:manipulation}.card:active{transform:scale(.97)}.card.sel{border-color:#e28ead}.pic{height:145px;background:#fcf1f6;border-radius:15px;display:flex;align-items:center;justify-content:center;overflow:hidden}.pic svg{width:115px;height:115px}.pic img{width:100%;height:100%;object-fit:cover}.name{font-weight:700;margin:8px 3px 2px;font-size:14px}.tag{font-size:11px;color:#9b8994;margin:0 3px 4px}
+.outfit{margin-top:20px;background:white;border-radius:22px;padding:14px;box-shadow:0 3px 14px #d6b9c522}.outfit h3{margin:2px 0 12px}.og{display:grid;grid-template-columns:1fr 1fr;gap:9px}.slot{background:#fcf1f6;border-radius:15px;padding:8px;text-align:center;font-size:11px}.slot svg{height:85px;width:100%}.slot b{display:block;font-size:12px;margin-top:3px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.actions button{width:100%}.empty{padding:30px;text-align:center;color:#9b8994}
+</style>
+<body><header><div class="wrap"><h1>🩷 Closet Day</h1><div class="sub">วันนี้ใส่อะไรดี?</div></div></header><main class="wrap">
+<section class="hero"><h2>✨ Today's Outfit</h2><div>เลือกเองก็ได้ ให้เว็บสุ่มให้ก็ได้!</div><button class="primary" id="random">🎲 สุ่มชุดวันนี้</button></section>
+<div class="tabs" id="tabs"></div><div class="grid" id="grid"></div>
+<section class="outfit"><h3>👗 ชุดของวันนี้</h3><div class="og" id="og"></div><div class="actions"><button class="primary" id="again">✨ สุ่มใหม่</button><button id="clear">🗑️ ล้างชุด</button><button id="add">➕ เพิ่มรูปของฉัน</button><button id="fav">♡ บันทึกชุด</button></div><input id="file" type="file" accept="image/*" hidden></section>
+</main>
+<script>
+const A=[
+['เสื้อ','Baby Tee สีชมพู','น่ารัก','top','#f3a6c5'],['เสื้อ','เชิ้ตขาว','มินิมอล','top','#f4f0ea'],['เสื้อ','เสื้อแขนยาวครีม','เกาหลี','top','#dfc8aa'],['เสื้อ','เสื้อยืดฟ้า','ลำลอง','top','#9bcde7'],['เสื้อ','เสื้อกั๊กไหมพรม','ญี่ปุ่น','top','#ad846d'],
+['กางเกง','ยีนส์ขากว้าง','มินิมอล','bottom','#789cbb'],['กางเกง','คาร์โก้','Y2K','bottom','#899b78'],['กางเกง','สแลคดำ','เกาหลี','bottom','#48454c'],
+['กระโปรง/เดรส','กระโปรงพลีท','ญี่ปุ่น','bottom','#b5afb9'],['กระโปรง/เดรส','กระโปรงยีนส์','ลำลอง','bottom','#7597b5'],['กระโปรง/เดรส','เดรสหวาน','น่ารัก','dress','#e9afc5'],['กระโปรง/เดรส','เดรสครีม','มินิมอล','dress','#e5d0ae'],
+['เสื้อคลุม','คาร์ดิแกนชมพู','น่ารัก','outer','#d99bb5'],['เสื้อคลุม','แจ็กเก็ตยีนส์','ลำลอง','outer','#7599b5'],
+['รองเท้า','สนีกเกอร์ขาว','มินิมอล','shoe','#eeeae3'],['รองเท้า','Mary Jane','ญี่ปุ่น','shoe','#322d34'],
+['กระเป๋า','กระเป๋าสะพาย','เกาหลี','bag','#99715b'],['กระเป๋า','กระเป๋าใบจิ๋ว','Y2K','bag','#e09ab8'],
+['เครื่องประดับ','สร้อยไข่มุก','น่ารัก','acc','#eee7e5'],['เครื่องประดับ','โบว์ริบบิ้น','ญี่ปุ่น','acc','#df91af'],
+['หมวก/แอ็กเซสซอรี','หมวกแก๊ป','ลำลอง','hat','#d3c0a6'],['หมวก/แอ็กเซสซอรี','กิ๊บผีเสื้อ','น่ารัก','acc','#a7cde4']];
+const cats=['ทั้งหมด',...new Set(A.map(x=>x[0]))];let cat='ทั้งหมด',sel={};
+const $=id=>document.getElementById(id);
+function art(x){if(x[5])return '<img src="'+x[5]+'">';let c=x[4],k=x[3],s={top:`<path fill="${c}" d="M28 28l25-13 7 12 7-12 25 13-13 22v51H41V50z"/>`,bottom:`<path fill="${c}" d="M38 15h44l5 95H65L60 62l-5 48H27z"/>`,dress:`<path fill="${c}" d="M49 15h22l4 26 22 64H31l22-64z"/>`,outer:`<path fill="${c}" d="M35 20h50l12 86H69l-9-45-9 45H23z"/>`,shoe:`<path fill="${c}" d="M28 72q22 5 42 0l22 13q8 7-2 16H28q-10-7 0-29z"/>`,bag:`<rect x="29" y="38" width="62" height="58" rx="12" fill="${c}"/><path fill="none" stroke="#777" stroke-width="5" d="M43 40q0-28 34 0"/>`,acc:`<circle cx="60" cy="60" r="28" fill="${c}"/>`,hat:`<path fill="${c}" d="M25 62q10-42 35-42t35 42H25z"/><path fill="${c}" d="M18 62h84v14H18z"/>`};return '<svg viewBox="0 0 120 120">'+(s[k]||s.top)+'</svg>'}
+function render(){ $('tabs').innerHTML=cats.map(c=>`<button class="${c==cat?'on':''}" onclick="setCat('${c}')">${c}</button>`).join('');let arr=cat==='ทั้งหมด'?A:A.filter(x=>x[0]===cat);$('grid').innerHTML=arr.map((x,i)=>`<div class="card ${sel[x[0]]===x?'sel':''}" data-i="${A.indexOf(x)}"><div class="pic">${art(x)}</div><div class="name">${x[1]}</div><div class="tag">${x[2]}</div></div>`).join('');document.querySelectorAll('.card').forEach(c=>c.onclick=()=>{sel[A[c.dataset.i][0]]=A[c.dataset.i];render()});let slots=[['เสื้อ','👕'],['กางเกง/กระโปรง','👖'],['รองเท้า','👟'],['กระเป๋า','👜']];$('og').innerHTML=slots.map(q=>{let x=sel[q[0]]||sel['กระโปรง/เดรส'];return `<div class="slot">${q[1]} ${q[0]}${x?art(x):'<div style="font-size:40px;padding:20px">＋</div>'}<b>${x?x[1]:'ยังไม่ได้เลือก'}</b></div>`}).join('')}
+function setCat(c){cat=c;render()}
+function rnd(){let pick=(k)=>A.filter(x=>x[3]===k)[Math.floor(Math.random()*A.filter(x=>x[3]===k).length)];sel={};let t=pick('top'),b=[...A.filter(x=>x[3]==='bottom'||x[3]==='dress')][Math.floor(Math.random()*A.filter(x=>x[3]==='bottom'||x[3]==='dress').length)];sel['เสื้อ']=t;sel['กางเกง']=b;sel['กระโปรง/เดรส']=b;sel['รองเท้า']=pick('shoe');sel['กระเป๋า']=pick('bag');render();document.querySelector('.outfit').scrollIntoView({behavior:'smooth'})}
+$('random').onclick=rnd;$('again').onclick=rnd;$('clear').onclick=()=>{sel={};render()};$('add').onclick=()=>$('file').click();$('file').onchange=e=>{let f=e.target.files[0];if(!f)return;let u=URL.createObjectURL(f);A.push(['เสื้อผ้าของฉัน',f.name,'ของฉัน','top','#d5b3c3',u]);cat='เสื้อผ้าของฉัน';cats.push(cat);render()};$('fav').onclick=()=>alert('♡ บันทึกชุดนี้ไว้ในรายการโปรดแล้ว!');render();
+</script></html>
